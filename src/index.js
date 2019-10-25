@@ -97,8 +97,8 @@ class App extends Component {
     if (toiletStatus === "NO" && this.state.usersPositionObtained === "YES") {
       news = (
         <p>
-          Sadly, there were no toilets found, this is likely if you are trying
-          this app outside of the Melbourne CBD.
+          Sadly, there were no toilets found, it is likely that the nearest
+          toilet is more than 1km away!
           <i>
             <br></br>
             For developers, and those interested, try overriding the GPS sensor
@@ -107,17 +107,13 @@ class App extends Component {
         </p>
       );
     } else if (toiletStatus === "YES") {
-      news = (
-        <p>Good Heavens! Toilets were found, get busy sh*tting or die tryin'</p>
-      );
+      news = <p>Bust before you rust! Your kidneys will thank you later!</p>;
     }
 
     return (
       <div className="map">
-        <h1> Melbourne Public Toilet Finder </h1>
-        <p>
-          Note - this webapp works only within the city, because of the dataset
-        </p>
+        <h1> Toilet Finder (AU) </h1>
+        <p>Note - the current search radius is 1km</p>
         <p> User Position Obtained: {this.state.usersPositionObtained} </p>
         {news}
 
