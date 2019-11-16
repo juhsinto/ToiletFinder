@@ -93,7 +93,7 @@ class App extends Component {
           onClick={this.openPopup}
         >
           <Popup>
-            Click
+            Click&nbsp;
             <a
               href={`http://maps.google.com/maps?daddr=${position[0]},${position[1]}&amp;ll=`}
               target="_blank"
@@ -101,7 +101,7 @@ class App extends Component {
             >
               here
             </a>
-            to navigate to this location
+            &nbsp; to navigate to this location
           </Popup>
         </Marker>
       );
