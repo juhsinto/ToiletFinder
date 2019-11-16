@@ -86,7 +86,25 @@ class App extends Component {
         </Marker>
       );
     } else {
-      return <Marker key={`marker-${idx}`} position={position}></Marker>;
+      return (
+        <Marker
+          key={`marker-${idx}`}
+          position={position}
+          onClick={this.openPopup}
+        >
+          <Popup>
+            Click{" "}
+            <a
+              href={`http://maps.google.com/maps?daddr=${position[0]},${position[1]}&amp;ll=`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              here
+            </a>{" "}
+            to navigate to this location
+          </Popup>
+        </Marker>
+      );
     }
   }
 
@@ -97,8 +115,8 @@ class App extends Component {
     if (toiletStatus === "NO" && this.state.usersPositionObtained === "YES") {
       news = (
         <p>
-          Sadly, there were no toilets found, it is likely that the nearest
-          toilet is more than 1km away!
+          Sadly, there were no toilets found, this is likely because there are
+          no toilets in the vicinity of 1km
           <i>
             <br></br>
             For developers, and those interested, try overriding the GPS sensor
