@@ -2,6 +2,8 @@
 
 **Brief Description:** The aim of this project is to provide the user with a list of available toilets around them.
 
+![Alt Text](demo/video_output.gif)
+
 **More Elaborate Description: **
 
 1. User provides GPS co-ordinates to the application (via browser).
