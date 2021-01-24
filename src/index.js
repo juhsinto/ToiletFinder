@@ -88,11 +88,6 @@ class App extends Component {
       popupAnchor:  [-0, -0],
       iconSize: [32,45],     
     });
-    
-    // const iconMarkup = renderToStaticMarkup(<i className="fa fa-map-marker-alt fa-3x" />);
-    // const customMarkerIcon = divIcon({
-    //   html: iconMarkup,
-    // });
 
     // open the marker popup only for first marker!
     if (idx === 0) {
@@ -157,7 +152,7 @@ class App extends Component {
       
       <div className="map">
         <h1 className="test"> LooCation </h1>
-        <p>Note - the current search radius is 1km</p>
+        <p>Note - the current search radius is meters </p>
         <p> User Position Obtained: <span className={positionStatus}> {this.state.usersPositionObtained} </span> </p>
         {toiletRetrievalMessage}
 
