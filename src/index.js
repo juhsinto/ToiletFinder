@@ -13,62 +13,134 @@ class App extends Component {
     //   lng: 144.97499729999998
     markers: [],
     usersPositionObtained: "NO",
-    toiletsFound: "NO"
+    toiletsFound: "NO",
+
+    // initial value for distance range slider
+    rangeSlider: 500
   };
+
+  constructor() {
+    super()
+    this.handleChange = this.handleChange.bind(this)
+    this.refreshComponent = this.refreshComponent.bind(this)
+  }
 
   componentDidMount() {
     window.navigator.geolocation.getCurrentPosition(position => {
       console.log(
         "Current user's location is " +
-          position.coords.latitude +
-          ", " +
-          position.coords.longitude
+        position.coords.latitude +
+        ", " +
+        position.coords.longitude
       );
 
       this.setState({ usersPositionObtained: "YES" });
 
       // add to the markers ; i think there's a better way to do this (spread operator ?)
       const { markers } = this.state;
+      console.log("before ", this.state.markers);
       markers.push([position.coords.latitude, position.coords.longitude]);
       this.setState({ markers });
-
-      
-
+      console.log("after", this.state.markers);
+    
       axios
-        .post("https://www.jacintomendes.com:8443/api/toilets/", {
-          lat: position.coords.latitude,
-          long: position.coords.longitude
-        })
-        .then(response => {
-          //   console.log(response);
-          if (
-            typeof response.data.data !== "undefined" &&
-            response.data.data.length > 0
-          ) {
-            this.setState({ toiletsFound: "YES" });
-            let toilets = response.data.data;
+      .post("https://www.jacintomendes.com:8443/api/toilets-dist/", {
+        lat: position.coords.latitude,
+        long: position.coords.longitude,
+        distance: Number(this.state.rangeSlider)
+      })
+      .then(response => {
+        //   console.log(response);
+        if (
+          typeof response.data.data !== "undefined" &&
+          response.data.data.length > 0
+        ) {
+          this.setState({ toiletsFound: "YES" });
+          let toilets = response.data.data;
 
-            toilets.forEach(item => {
-              let toilet_coordinate = item.loc;
+          toilets.forEach(item => {
+            let toilet_coordinate = item.loc;
 
-              markers.push([
-                toilet_coordinate.coordinates[1],
+            markers.push([
+              toilet_coordinate.coordinates[1],
+              toilet_coordinate.coordinates[0]
+            ]);
+            this.setState({ markers });
+
+            console.log(
+              "FROM POST REQUEST: coordinates lat: " +
+                toilet_coordinate.coordinates[1] +
+                " coordinates long: " +
                 toilet_coordinate.coordinates[0]
-              ]);
-              this.setState({ markers });
+            );
+          });
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+    });
+  }
 
-              console.log(
-                "FROM POST REQUEST: coordinates lat: " +
-                  toilet_coordinate.coordinates[1] +
-                  " coordinates long: " +
-                  toilet_coordinate.coordinates[0]
-              );
-            });
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+  refreshComponent() {
+    window.navigator.geolocation.getCurrentPosition(position => {
+      console.log(
+        "Current user's location is " +
+        position.coords.latitude +
+        ", " +
+        position.coords.longitude
+      );
+
+      this.setState({ usersPositionObtained: "YES" });
+
+      // reset markers because we are refreshing
+      this.setState({ markers: [] });
+      this.setState({toiletsFound: "NO"});
+
+      // add to the markers ; i think there's a better way to do this (spread operator ?)
+      const { markers } = this.state;
+      this.setState({markers})
+      markers.push([position.coords.latitude, position.coords.longitude]);
+      
+      
+      this.handleChange = this.handleChange.bind(this)
+    
+      axios
+      .post("https://www.jacintomendes.com:8443/api/toilets-dist/", {
+        lat: position.coords.latitude,
+        long: position.coords.longitude,
+        distance: Number(this.state.rangeSlider)
+      })
+      .then(response => {
+        //   console.log(response);
+        if (
+          typeof response.data.data !== "undefined" &&
+          response.data.data.length > 0
+        ) {
+          this.setState({ toiletsFound: "YES" });
+          let toilets = response.data.data;
+
+          toilets.forEach(item => {
+            let toilet_coordinate = item.loc;
+
+            markers.push([
+              toilet_coordinate.coordinates[1],
+              toilet_coordinate.coordinates[0]
+            ]);
+            this.setState({ markers });
+
+            console.log(
+              "FROM POST REQUEST: coordinates lat: " +
+                toilet_coordinate.coordinates[1] +
+                " coordinates long: " +
+                toilet_coordinate.coordinates[0]
+            );
+          });
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
     });
   }
 
@@ -80,10 +152,12 @@ class App extends Component {
     }
   }
 
+  handleChange(event) {
+    this.setState({rangeSlider: event.target.value});
+  }
+  
   userLocationObtained(idx, position) {
-
-
-    const myIcon = new L.Icon({
+    const toiletIcon = new L.Icon({
       iconUrl: toiletMarker,
       popupAnchor:  [-0, -0],
       iconSize: [32,45],     
@@ -102,7 +176,7 @@ class App extends Component {
       return (
         <Marker
           key={`marker-${idx}`}
-          icon={myIcon}
+          icon={toiletIcon}
           position={position}
           onClick={this.openPopup}
         >
@@ -152,9 +226,20 @@ class App extends Component {
       
       <div className="map">
         <h1 className="test"> LooCation </h1>
-        <p>Note - the current search radius is meters </p>
+        <p> Note - the current search radius is {this.state.rangeSlider} meters</p>
         <p> User Position Obtained: <span className={positionStatus}> {this.state.usersPositionObtained} </span> </p>
         {toiletRetrievalMessage}
+
+        <p> Change Toilet Search Radius : 
+          <input 
+            id="typeinp" 
+            type="range" 
+            min="100" max="3000" 
+            value={this.state.rangeSlider} 
+            onChange={this.handleChange}
+            step="100"/>
+            <button onClick={this.refreshComponent}>Refresh</button>
+        </p>
 
         <Map
           center={[-37.808163434, 144.957829502]}
