@@ -204,7 +204,7 @@ class App extends Component {
       toiletRetrievalMessage = (
         <p>
           Sadly, there were no toilets found, this is likely because there are
-          no toilets in the vicinity of 1km
+          no toilets in the vicinity of {this.state.rangeSlider} meters
           <i>
             <br></br>
             For developers, and those interested, try overriding the GPS sensor
