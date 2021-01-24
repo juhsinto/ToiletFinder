@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
+import "./index.css";
+import toiletMarker from './assets/marker.png';
+import L from 'leaflet';
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 class App extends Component {
@@ -28,6 +31,8 @@ class App extends Component {
       const { markers } = this.state;
       markers.push([position.coords.latitude, position.coords.longitude]);
       this.setState({ markers });
+
+      
 
       axios
         .post("https://www.jacintomendes.com:8443/api/toilets/", {
@@ -75,7 +80,20 @@ class App extends Component {
     }
   }
 
-  userLocationObtainer(idx, position) {
+  userLocationObtained(idx, position) {
+
+
+    const myIcon = new L.Icon({
+      iconUrl: toiletMarker,
+      popupAnchor:  [-0, -0],
+      iconSize: [32,45],     
+    });
+    
+    // const iconMarkup = renderToStaticMarkup(<i className="fa fa-map-marker-alt fa-3x" />);
+    // const customMarkerIcon = divIcon({
+    //   html: iconMarkup,
+    // });
+
     // open the marker popup only for first marker!
     if (idx === 0) {
       return (
@@ -89,6 +107,7 @@ class App extends Component {
       return (
         <Marker
           key={`marker-${idx}`}
+          icon={myIcon}
           position={position}
           onClick={this.openPopup}
         >
@@ -110,10 +129,10 @@ class App extends Component {
 
   render() {
     const toiletStatus = this.state.toiletsFound;
-    let news;
+    let toiletRetrievalMessage;
 
     if (toiletStatus === "NO" && this.state.usersPositionObtained === "YES") {
-      news = (
+      toiletRetrievalMessage = (
         <p>
           Sadly, there were no toilets found, this is likely because there are
           no toilets in the vicinity of 1km
@@ -125,15 +144,22 @@ class App extends Component {
         </p>
       );
     } else if (toiletStatus === "YES") {
-      news = <p>Bust before you rust! Your kidneys will thank you later!</p>;
+      toiletRetrievalMessage = <p>Bust before you rust! Your kidneys will thank you later!</p>;
+    }
+
+    // for setting the position obtained status color
+    let positionStatus = 'red';
+    if (this.state.usersPositionObtained === "YES") {
+      positionStatus = 'green';
     }
 
     return (
+      
       <div className="map">
-        <h1> Toilet Finder (AU) </h1>
+        <h1 className="test"> LooCation </h1>
         <p>Note - the current search radius is 1km</p>
-        <p> User Position Obtained: {this.state.usersPositionObtained} </p>
-        {news}
+        <p> User Position Obtained: <span className={positionStatus}> {this.state.usersPositionObtained} </span> </p>
+        {toiletRetrievalMessage}
 
         <Map
           center={[-37.808163434, 144.957829502]}
@@ -145,7 +171,7 @@ class App extends Component {
             attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
           />
           {this.state.markers.map((position, idx) =>
-            this.userLocationObtainer(idx, position)
+            this.userLocationObtained(idx, position)
           )}
         </Map>
       </div>
