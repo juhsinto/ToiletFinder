@@ -1,10 +1,18 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import TagManager from 'react-gtm-module';
 import axios from "axios";
 import "./index.css";
 import toiletMarker from './assets/marker.png';
 import L from 'leaflet';
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
+
+const tagManagerArgs = {
+  gtmId: 'GTM-NM4MJGQ'
+}
+
+TagManager.initialize(tagManagerArgs);
+
 
 class App extends Component {
   state = {
@@ -44,7 +52,7 @@ class App extends Component {
       console.log("after", this.state.markers);
     
       axios
-      .post("https://www.jacintomendes.com:8443/api/toilets-dist/", {
+      .post("https://loocation-toiletfinder-server.herokuapp.com/api/toilets-dist/", {
         lat: position.coords.latitude,
         long: position.coords.longitude,
         distance: Number(this.state.rangeSlider)
@@ -106,7 +114,7 @@ class App extends Component {
       this.handleChange = this.handleChange.bind(this)
     
       axios
-      .post("https://www.jacintomendes.com:8443/api/toilets-dist/", {
+      .post("https://loocation-toiletfinder-server.herokuapp.com/api/toilets-dist/", {
         lat: position.coords.latitude,
         long: position.coords.longitude,
         distance: Number(this.state.rangeSlider)
