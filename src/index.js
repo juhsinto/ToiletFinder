@@ -1,18 +1,17 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import TagManager from 'react-gtm-module';
+import TagManager from "react-gtm-module";
 import axios from "axios";
 import "./index.css";
-import toiletMarker from './assets/marker.png';
-import L from 'leaflet';
+import toiletMarker from "./assets/marker.png";
+import L from "leaflet";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 const tagManagerArgs = {
-  gtmId: 'GTM-NM4MJGQ'
-}
+  gtmId: "GTM-NM4MJGQ",
+};
 
 TagManager.initialize(tagManagerArgs);
-
 
 class App extends Component {
   state = {
@@ -24,22 +23,22 @@ class App extends Component {
     toiletsFound: "NO",
 
     // initial value for distance range slider
-    rangeSlider: 500
+    rangeSlider: 500,
   };
 
   constructor() {
-    super()
-    this.handleChange = this.handleChange.bind(this)
-    this.refreshComponent = this.refreshComponent.bind(this)
+    super();
+    this.handleChange = this.handleChange.bind(this);
+    this.refreshComponent = this.refreshComponent.bind(this);
   }
 
   componentDidMount() {
-    window.navigator.geolocation.getCurrentPosition(position => {
+    window.navigator.geolocation.getCurrentPosition((position) => {
       console.log(
         "Current user's location is " +
-        position.coords.latitude +
-        ", " +
-        position.coords.longitude
+          position.coords.latitude +
+          ", " +
+          position.coords.longitude
       );
 
       this.setState({ usersPositionObtained: "YES" });
@@ -50,105 +49,104 @@ class App extends Component {
       markers.push([position.coords.latitude, position.coords.longitude]);
       this.setState({ markers });
       console.log("after", this.state.markers);
-    
+
       axios
-      .post("https://loocation-toiletfinder-server.herokuapp.com/api/toilets-dist/", {
-        lat: position.coords.latitude,
-        long: position.coords.longitude,
-        distance: Number(this.state.rangeSlider)
-      })
-      .then(response => {
-        //   console.log(response);
-        if (
-          typeof response.data.data !== "undefined" &&
-          response.data.data.length > 0
-        ) {
-          this.setState({ toiletsFound: "YES" });
-          let toilets = response.data.data;
+        .post("https://tiny-ruby-snapper-tie.cyclic.app/api/toilets-dist/", {
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+          distance: Number(this.state.rangeSlider),
+        })
+        .then((response) => {
+          console.log(response);
+          if (
+            typeof response.data !== "undefined" &&
+            response.data.length > 0
+          ) {
+            this.setState({ toiletsFound: "YES" });
+            let toilets = response.data;
 
-          toilets.forEach(item => {
-            let toilet_coordinate = item.loc;
+            toilets.forEach((item) => {
+              let toilet_coordinate = item.loc;
 
-            markers.push([
-              toilet_coordinate.coordinates[1],
-              toilet_coordinate.coordinates[0]
-            ]);
-            this.setState({ markers });
+              markers.push([
+                toilet_coordinate.coordinates[1],
+                toilet_coordinate.coordinates[0],
+              ]);
+              this.setState({ markers });
 
-            console.log(
-              "FROM POST REQUEST: coordinates lat: " +
-                toilet_coordinate.coordinates[1] +
-                " coordinates long: " +
-                toilet_coordinate.coordinates[0]
-            );
-          });
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+              console.log(
+                "FROM POST REQUEST: coordinates lat: " +
+                  toilet_coordinate.coordinates[1] +
+                  " coordinates long: " +
+                  toilet_coordinate.coordinates[0]
+              );
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     });
   }
 
   refreshComponent() {
-    window.navigator.geolocation.getCurrentPosition(position => {
+    window.navigator.geolocation.getCurrentPosition((position) => {
       console.log(
         "Current user's location is " +
-        position.coords.latitude +
-        ", " +
-        position.coords.longitude
+          position.coords.latitude +
+          ", " +
+          position.coords.longitude
       );
 
       this.setState({ usersPositionObtained: "YES" });
 
       // reset markers because we are refreshing
       this.setState({ markers: [] });
-      this.setState({toiletsFound: "NO"});
+      this.setState({ toiletsFound: "NO" });
 
       // add to the markers ; i think there's a better way to do this (spread operator ?)
       const { markers } = this.state;
-      this.setState({markers})
+      this.setState({ markers });
       markers.push([position.coords.latitude, position.coords.longitude]);
-      
-      
-      this.handleChange = this.handleChange.bind(this)
-    
+
+      this.handleChange = this.handleChange.bind(this);
+
       axios
-      .post("https://loocation-toiletfinder-server.herokuapp.com/api/toilets-dist/", {
-        lat: position.coords.latitude,
-        long: position.coords.longitude,
-        distance: Number(this.state.rangeSlider)
-      })
-      .then(response => {
-        //   console.log(response);
-        if (
-          typeof response.data.data !== "undefined" &&
-          response.data.data.length > 0
-        ) {
-          this.setState({ toiletsFound: "YES" });
-          let toilets = response.data.data;
+        .post("https://tiny-ruby-snapper-tie.cyclic.app/api/toilets-dist/", {
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+          distance: Number(this.state.rangeSlider),
+        })
+        .then((response) => {
+          console.log(response);
+          if (
+            typeof response.data !== "undefined" &&
+            response.data.length > 0
+          ) {
+            this.setState({ toiletsFound: "YES" });
+            let toilets = response.data;
 
-          toilets.forEach(item => {
-            let toilet_coordinate = item.loc;
+            toilets.forEach((item) => {
+              let toilet_coordinate = item.loc;
 
-            markers.push([
-              toilet_coordinate.coordinates[1],
-              toilet_coordinate.coordinates[0]
-            ]);
-            this.setState({ markers });
+              markers.push([
+                toilet_coordinate.coordinates[1],
+                toilet_coordinate.coordinates[0],
+              ]);
+              this.setState({ markers });
 
-            console.log(
-              "FROM POST REQUEST: coordinates lat: " +
-                toilet_coordinate.coordinates[1] +
-                " coordinates long: " +
-                toilet_coordinate.coordinates[0]
-            );
-          });
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+              console.log(
+                "FROM POST REQUEST: coordinates lat: " +
+                  toilet_coordinate.coordinates[1] +
+                  " coordinates long: " +
+                  toilet_coordinate.coordinates[0]
+              );
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     });
   }
 
@@ -161,14 +159,14 @@ class App extends Component {
   }
 
   handleChange(event) {
-    this.setState({rangeSlider: event.target.value});
+    this.setState({ rangeSlider: event.target.value });
   }
-  
+
   userLocationObtained(idx, position) {
     const toiletIcon = new L.Icon({
       iconUrl: toiletMarker,
-      popupAnchor:  [-0, -0],
-      iconSize: [32,45],     
+      popupAnchor: [-0, -0],
+      iconSize: [32, 45],
     });
 
     // open the marker popup only for first marker!
@@ -221,32 +219,47 @@ class App extends Component {
         </p>
       );
     } else if (toiletStatus === "YES") {
-      toiletRetrievalMessage = <p>Bust before you rust! Your kidneys will thank you later!</p>;
+      toiletRetrievalMessage = (
+        <p>Bust before you rust! Your kidneys will thank you later!</p>
+      );
     }
 
     // for setting the position obtained status color
-    let positionStatus = 'red';
+    let positionStatus = "red";
     if (this.state.usersPositionObtained === "YES") {
-      positionStatus = 'green';
+      positionStatus = "green";
     }
 
     return (
-      
       <div className="map">
         <h1 className="test"> LooCation </h1>
-        <p> Note - the current search radius is {this.state.rangeSlider} meters</p>
-        <p> User Position Obtained: <span className={positionStatus}> {this.state.usersPositionObtained} </span> </p>
+        <p>
+          {" "}
+          Note - the current search radius is {this.state.rangeSlider} meters
+        </p>
+        <p>
+          {" "}
+          User Position Obtained:{" "}
+          <span className={positionStatus}>
+            {" "}
+            {this.state.usersPositionObtained}{" "}
+          </span>{" "}
+        </p>
         {toiletRetrievalMessage}
 
-        <p> Change Toilet Search Radius : 
-          <input 
-            id="typeinp" 
-            type="range" 
-            min="100" max="3000" 
-            value={this.state.rangeSlider} 
+        <p>
+          {" "}
+          Change Toilet Search Radius :
+          <input
+            id="typeinp"
+            type="range"
+            min="100"
+            max="3000"
+            value={this.state.rangeSlider}
             onChange={this.handleChange}
-            step="100"/>
-            <button onClick={this.refreshComponent}>Refresh</button>
+            step="100"
+          />
+          <button onClick={this.refreshComponent}>Refresh</button>
         </p>
 
         <Map
