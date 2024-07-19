@@ -112,7 +112,7 @@ class App extends Component {
       this.handleChange = this.handleChange.bind(this);
 
       axios
-        .post("https://aupubtoiletserver.onrender.com//api/toilets-dist/", {
+        .post("https://aupubtoiletserver.onrender.com/api/toilets-dist/", {
           lat: position.coords.latitude,
           long: position.coords.longitude,
           distance: Number(this.state.rangeSlider),
