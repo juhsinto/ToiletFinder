@@ -15,3 +15,7 @@
 
 1. User submissions - The user would be able to submit a toilet location ; after the location is verified by (more than 3 users?) it gets added to the list.
 2. Toilet ratings (star rating?)
+
+**TODO**
+Add Tests
+Deploy to Azure
