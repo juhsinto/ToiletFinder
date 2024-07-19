@@ -51,7 +51,7 @@ class App extends Component {
       console.log("after", this.state.markers);
 
       axios
-        .post("https://tiny-ruby-snapper-tie.cyclic.app/api/toilets-dist/", {
+        .post("https://aupubtoiletserver.onrender.com/api/toilets-dist/", {
           lat: position.coords.latitude,
           long: position.coords.longitude,
           distance: Number(this.state.rangeSlider),
@@ -112,7 +112,7 @@ class App extends Component {
       this.handleChange = this.handleChange.bind(this);
 
       axios
-        .post("https://tiny-ruby-snapper-tie.cyclic.app/api/toilets-dist/", {
+        .post("https://aupubtoiletserver.onrender.com//api/toilets-dist/", {
           lat: position.coords.latitude,
           long: position.coords.longitude,
           distance: Number(this.state.rangeSlider),
